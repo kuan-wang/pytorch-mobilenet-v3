@@ -86,6 +86,8 @@ class MobileBottleneck(nn.Module):
             nlin_layer = nn.ReLU # or ReLU6
         elif nl == 'HS':
             nlin_layer = Hswish
+        else:
+            raise NotImplementedError
         if se:
             SELayer = SEModule
         else:
@@ -114,7 +116,7 @@ class MobileBottleneck(nn.Module):
 
 
 class MobileNetV3(nn.Module):
-    def __init__(self, n_class=1000, input_size=224, mode='large', width_mult=1.):
+    def __init__(self, n_class=1000, input_size=224, mode='large', width_mult=1.0):
         super(MobileNetV3, self).__init__()
         input_channel = 16
         last_channel = 1280
