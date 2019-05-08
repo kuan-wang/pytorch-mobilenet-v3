@@ -114,7 +114,7 @@ class MobileBottleneck(nn.Module):
 
 
 class MobileNetV3(nn.Module):
-    def __init__(self, n_class=1000, input_size=224, mode='large', width_mult=1.):
+    def __init__(self, n_class=1000, input_size=224, mode='large', width_mult=0.75):
         super(MobileNetV3, self).__init__()
         input_channel = 16
         last_channel = 1280
@@ -166,7 +166,8 @@ class MobileNetV3(nn.Module):
         # building mobile blocks
         for k, exp, c, se, nl, s in mobile_setting:
             output_channel = make_divisible(c * width_mult)
-            self.features.append(MobileBottleneck(input_channel, output_channel, k, s, exp, se, nl))
+            exp_channel = make_divisible(exp * width_mult)
+            self.features.append(MobileBottleneck(input_channel, output_channel, k, s, exp_channel, se, nl))
             input_channel = output_channel
 
         # building last several layers
@@ -181,6 +182,7 @@ class MobileNetV3(nn.Module):
         elif mode == 'small':
             last_conv = make_divisible(576 * width_mult)
             self.features.append(conv_1x1_bn(input_channel, last_conv, nlin_layer=Hswish))
+            self.features.append(SEModule(last_conv))  # refer to paper Table2
             self.features.append(nn.AdaptiveAvgPool2d(1))
             self.features.append(Hswish(inplace=True))
             self.features.append(conv_1x1_bn(last_conv, last_channel, nlin_layer=Hswish))
