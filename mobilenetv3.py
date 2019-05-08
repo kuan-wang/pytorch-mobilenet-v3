@@ -32,12 +32,12 @@ class Hswish(nn.Module):
 
 
 class Hsigmoid(nn.Module):
-    def __init__(self):
+    def __init__(self, inplace=True):
         super(Hsigmoid, self).__init__()
+        self.inplace = inplace
 
     def forward(self, x):
-        # TODO: implement Hard Sigmoid
-        return torch.sigmoid(x)
+        return F.relu6(x + 3., inplace=self.inplace) / 6.
 
 
 class SELayer(nn.Module):
