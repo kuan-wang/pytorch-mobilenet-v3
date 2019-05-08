@@ -40,9 +40,9 @@ class Hsigmoid(nn.Module):
         return F.relu6(x + 3., inplace=self.inplace) / 6.
 
 
-class SELayer(nn.Module):
+class SEModule(nn.Module):
     def __init__(self, channel, reduction=4):
-        super(SELayer, self).__init__()
+        super(SEModule, self).__init__()
         self.avg_pool = nn.AdaptiveAvgPool2d(1)
         self.fc = nn.Sequential(
             nn.Linear(channel, channel // reduction, bias=False),
@@ -57,6 +57,14 @@ class SELayer(nn.Module):
         y = self.avg_pool(x).view(b, c)
         y = self.fc(y).view(b, c, 1, 1)
         return x * y.expand_as(x)
+
+
+class Identity(nn.Module):
+    def __init__(self, channel):
+        super(Identity, self).__init__()
+
+    def forward(self, x):
+        return x
 
 
 def make_divisible(x, divisible_by=8):
@@ -78,7 +86,10 @@ class MobileBottleneck(nn.Module):
             nlin_layer = nn.ReLU # or ReLU6
         elif nl == 'HS':
             nlin_layer = Hswish
-
+        if se:
+            SELayer = SEModule
+        else:
+            SELayer = Identity
 
         self.conv = nn.Sequential(
             # pw
@@ -88,22 +99,18 @@ class MobileBottleneck(nn.Module):
             # dw
             conv_layer(exp, exp, kernel, stride, padding, groups=exp, bias=False),
             norm_layer(exp),
+            SELayer(exp),
             nlin_layer(inplace=True),
             # pw-linear
             conv_layer(exp, oup, 1, 1, 0, bias=False),
             norm_layer(oup),
         )
 
-        if se:
-            self.se = SELayer(oup)
-        else:
-            self.se = nn.Sequential()
-
     def forward(self, x):
         if self.use_res_connect:
-            return x + self.se(self.conv(x))
+            return x + self.conv(x)
         else:
-            return self.se(self.conv(x))
+            return self.conv(x)
 
 
 class MobileNetV3(nn.Module):
@@ -138,12 +145,13 @@ class MobileNetV3(nn.Module):
                 [3, 16,  16,  True,  'RE', 2],
                 [3, 72,  24,  False, 'RE', 2],
                 [3, 88,  24,  False, 'RE', 1],
-                [5, 96,  40,  True,  'HS', 1],
+                [5, 96,  40,  True,  'HS', 2],  # stride = 2, paper set it to 1 by error
                 [5, 240, 40,  True,  'HS', 1],
                 [5, 240, 40,  True,  'HS', 1],
                 [5, 120, 48,  True,  'HS', 1],
                 [5, 144, 48,  True,  'HS', 1],
                 [5, 288, 96,  True,  'HS', 2],
+                [5, 576, 96,  True,  'HS', 1],
                 [5, 576, 96,  True,  'HS', 1],
             ]
         else:
@@ -165,7 +173,7 @@ class MobileNetV3(nn.Module):
         if mode == 'large':
             last_conv = make_divisible(960 * width_mult)
             self.features.append(conv_1x1_bn(input_channel, last_conv, nlin_layer=Hswish))
-            self.features.append(nn.AvgPool2d(input_size//32))
+            self.features.append(nn.AdaptiveAvgPool2d(1))
             self.features.append(Hswish(inplace=True))
             self.features.append(nn.Conv2d(last_conv, last_channel, 1, 1, 0))
             self.features.append(Hswish(inplace=True))
@@ -173,7 +181,7 @@ class MobileNetV3(nn.Module):
         elif mode == 'small':
             last_conv = make_divisible(576 * width_mult)
             self.features.append(conv_1x1_bn(input_channel, last_conv, nlin_layer=Hswish))
-            self.features.append(nn.AvgPool2d(input_size//32))
+            self.features.append(nn.AdaptiveAvgPool2d(1))
             self.features.append(Hswish(inplace=True))
             self.features.append(conv_1x1_bn(last_conv, last_channel, nlin_layer=Hswish))
             self.features.append(conv_1x1_bn(last_channel, n_class, nlin_layer=Hswish))
@@ -216,7 +224,8 @@ def mobilenetv3(pretrained=False, **kwargs):
 if __name__ == '__main__':
     net = mobilenetv3()
     print('mobilenetv3:\n', net)
-    input_size=(1, 3, 224, 224)
+    print('Total params: %.2fM' % (sum(p.numel() for p in net.parameters())/1000000.0))
+    input_size=(16, 3, 224, 224)
     x = torch.randn(input_size)
     out = net(x)
 
