@@ -136,7 +136,7 @@ class MobileNetV3(nn.Module):
                 [3, 184, 80,  False, 'HS', 1],
                 [3, 480, 112, True,  'HS', 1],
                 [3, 672, 112, True,  'HS', 1],
-                [5, 672, 160, True,  'HS', 1],
+                [5, 672, 112, True,  'HS', 1],  # c = 112, paper set it to 160 by error
                 [5, 672, 160, True,  'HS', 2],
                 [5, 960, 160, True,  'HS', 1],
             ]
