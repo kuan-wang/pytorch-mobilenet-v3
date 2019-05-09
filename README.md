@@ -26,6 +26,7 @@ In progress ...
 ## Usage
 Pretrained model are still training ...
 ```python
+    # pytorch 1.0.1
     # large
     net_large = mobilenetv3(mode='large')
     # small
