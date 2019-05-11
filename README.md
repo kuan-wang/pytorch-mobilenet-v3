@@ -49,8 +49,7 @@ input_size = 224
 
 train_loader = torch.utils.data.DataLoader(
     datasets.ImageFolder(
-    traindir,
-    transforms.Compose([
+    traindir, transforms.Compose([
         transforms.RandomResizedCrop(input_size), 
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
