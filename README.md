@@ -22,7 +22,7 @@ In progress ...
 | -----------  | --------- | ---------- | --------- | ------------------------------------------------------------ |
 | Offical 1.0  | 66  M     | 2.9  M     | 67.4%     | -                                                            |
 | Offical 0.75 | 44  M     | 2.4  M     | 65.4%     | -                                                            |
-| Ours    1.0  |   - M     | 3.11 M     | 67.218%   |  [[google drive](https://drive.google.com/open?id=1397oUs0VDgZXDn4pqKZPD5NJoDQ-vlZK)] |
+| Ours    1.0  | 57- M     | 3.11 M     | 67.218%   |  [[google drive](https://drive.google.com/open?id=1397oUs0VDgZXDn4pqKZPD5NJoDQ-vlZK)] |
 | Ours    0.75 |   - M     | 2.47 M     | -         | - |
 
 ## Usage
