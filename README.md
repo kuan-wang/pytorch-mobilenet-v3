@@ -46,17 +46,17 @@ normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                  std=[0.229, 0.224, 0.225])
 
 input_size = 224
-train_dataset = datasets.ImageFolder(
+
+train_loader = torch.utils.data.DataLoader(
+    datasets.ImageFolder(
     traindir,
     transforms.Compose([
-        transforms.RandomResizedCrop(input_size, scale=(0.2, 1.0)), 
+        transforms.RandomResizedCrop(input_size), 
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
         normalize,
-    ]))
-
-train_loader = torch.utils.data.DataLoader(
-    train_dataset, batch_size=batch_size, shuffle=True,
+    ])), 
+    batch_size=batch_size, shuffle=True,
     num_workers=n_worker, pin_memory=True)
 
 val_loader = torch.utils.data.DataLoader(
