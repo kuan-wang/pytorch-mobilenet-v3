@@ -116,7 +116,7 @@ class MobileBottleneck(nn.Module):
 
 
 class MobileNetV3(nn.Module):
-    def __init__(self, n_class=1000, input_size=224, mode='large', width_mult=1.0):
+    def __init__(self, n_class=1000, input_size=224, mode='small', width_mult=1.0):
         super(MobileNetV3, self).__init__()
         input_channel = 16
         last_channel = 1280
@@ -226,7 +226,9 @@ def mobilenetv3(pretrained=False, **kwargs):
 
 
 if __name__ == '__main__':
-    net = mobilenetv3()
+    net = mobilenetv3(mode='small')
+    state_dict = torch.load('mobilenetv3_small_67.218.pth.tar')
+    net.load_state_dict(state_dict)
     print('mobilenetv3:\n', net)
     print('Total params: %.2fM' % (sum(p.numel() for p in net.parameters())/1000000.0))
     input_size=(16, 3, 224, 224)
