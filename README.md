@@ -26,8 +26,9 @@ In progress ...
 | Ours    0.75 |   - M     | 2.47 M     | -         | - |
 
 ## Usage
-Pretrained model are still training ...
+Pretrained models are still training ...
 ```python
+    # pytorch 1.0.1
     # large
     net_large = mobilenetv3(mode='large')
     # small
