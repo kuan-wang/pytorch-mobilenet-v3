@@ -4,8 +4,9 @@ This is a PyTorch implementation of MobileNetV3 architecture as described in the
 
 Some details may be different from the original paper, welcome to discuss and help me figure it out.
 
-**[NEW]** The pretrained model of small version mobilenet-v3 is online.
-**[NEW]** The paper updated on 17 May, so I renew the codes for that, but there still are some bugs.
+- **[NEW]** The pretrained model of small version mobilenet-v3 is online, accuracy achieves the same as paper. 
+- **[NEW]** The paper updated on 17 May, so I renew the codes for that, but there still are some bugs.
+- **[NEW]** I remove the se before the global avg_pool (the paper may add it in error), and now the model size is close to paper.
 
 ## Training & Accuracy
 In progress ...
