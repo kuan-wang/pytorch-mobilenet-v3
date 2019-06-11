@@ -236,7 +236,7 @@ if __name__ == '__main__':
     print('mobilenetv3:\n', net)
     print('Total params: %.2fM' % (sum(p.numel() for p in net.parameters())/1000000.0))
     input_size=(1, 3, 224, 224)
-    # pip install --upgrade git+https://github.com/Lyken17/pytorch-OpCounter.git
+    # pip install --upgrade git+https://github.com/kuan-wang/pytorch-OpCounter.git
     from thop import profile
     flops, params = profile(net, input_size=input_size)
     # print(flops)
