@@ -15,16 +15,16 @@ In progress ...
 | -----------  | --------- | ---------- | --------- | ------------------------------------------------------------ |
 | Offical 1.0  | 219 M     | 5.4  M     | 75.2%     | -                                                            |
 | Offical 0.75 | 155 M     | 4    M     | 73.3%     | -                                                            |
-| Ours    1.0  |   - M     | 5.48 M     | 72.8%     | - |
-| Ours    0.75 |   - M     | 3.69 M     |  -        | - |
+| Ours    1.0  | 224 M     | 5.48 M     | 72.8%     | - |
+| Ours    0.75 | 148 M     | 3.91 M     |  -        | - |
 
 ### MobileNetV3 small
 |              | Madds     | Parameters | Top1-acc  | Pretrained Model                                             |
 | -----------  | --------- | ---------- | --------- | ------------------------------------------------------------ |
 | Offical 1.0  | 66  M     | 2.9  M     | 67.4%     | -                                                            |
 | Offical 0.75 | 44  M     | 2.4  M     | 65.4%     | -                                                            |
-| Ours    1.0  |   - M     | 2.94 M     | 67.4%     |  [[google drive](https://drive.google.com/open?id=1lCsN3kWXAu8C30bQrD2JTZ7S2v4yt23C)] |
-| Ours    0.75 |   - M     | 2.47 M     | -         | - |
+| Ours    1.0  | 63  M     | 2.94 M     | 67.4%     |  [[google drive](https://drive.google.com/open?id=1lCsN3kWXAu8C30bQrD2JTZ7S2v4yt23C)] |
+| Ours    0.75 | 46  M     | 2.38 M     | -         | - |
 
 ## Usage
 Pretrained models are still training ...
