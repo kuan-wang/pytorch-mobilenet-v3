@@ -5,6 +5,7 @@ This is a PyTorch implementation of MobileNetV3 architecture as described in the
 Some details may be different from the original paper, welcome to discuss and help me figure it out.
 
 **[NEW]** The pretrained model of small version mobilenet-v3 is online.
+**[NEW]** The paper updated on 17 May, so I renew the codes for that, but there still are some bugs.
 
 ## Training & Accuracy
 In progress ...
@@ -14,7 +15,7 @@ In progress ...
 | -----------  | --------- | ---------- | --------- | ------------------------------------------------------------ |
 | Offical 1.0  | 219 M     | 5.4  M     | 75.2%     | -                                                            |
 | Offical 0.75 | 155 M     | 4    M     | 73.3%     | -                                                            |
-| Ours    1.0  |   - M     | 5.08 M     |  -        | - |
+| Ours    1.0  |   - M     | 5.48 M     | 72.8%     | - |
 | Ours    0.75 |   - M     | 3.69 M     |  -        | - |
 
 ### MobileNetV3 small
@@ -22,7 +23,7 @@ In progress ...
 | -----------  | --------- | ---------- | --------- | ------------------------------------------------------------ |
 | Offical 1.0  | 66  M     | 2.9  M     | 67.4%     | -                                                            |
 | Offical 0.75 | 44  M     | 2.4  M     | 65.4%     | -                                                            |
-| Ours    1.0  |   - M     | 3.11 M     | 67.218%   |  [[google drive](https://drive.google.com/open?id=1397oUs0VDgZXDn4pqKZPD5NJoDQ-vlZK)] |
+| Ours    1.0  |   - M     | 2.94 M     | 67.4%     |  [[google drive](https://drive.google.com/open?id=1397oUs0VDgZXDn4pqKZPD5NJoDQ-vlZK)] |
 | Ours    0.75 |   - M     | 2.47 M     | -         | - |
 
 ## Usage
@@ -33,7 +34,7 @@ Pretrained models are still training ...
     net_large = mobilenetv3(mode='large')
     # small
     net_small = mobilenetv3(mode='small')
-    state_dict = torch.load('mobilenetv3_small_67.218.pth.tar')
+    state_dict = torch.load('mobilenetv3_small_67.4.pth.tar')
     net_small.load_state_dict(state_dict)
 ```
 
@@ -49,7 +50,7 @@ input_size = 224
 train_dataset = datasets.ImageFolder(
     traindir,
     transforms.Compose([
-        transforms.RandomResizedCrop(input_size, scale=(0.2, 1.0)), 
+        transforms.RandomResizedCrop(input_size, scale=(0.2, 1.0)),
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
         normalize,

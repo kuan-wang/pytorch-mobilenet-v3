@@ -116,7 +116,7 @@ class MobileBottleneck(nn.Module):
 
 
 class MobileNetV3(nn.Module):
-    def __init__(self, n_class=1000, input_size=224, mode='small', width_mult=1.0):
+    def __init__(self, n_class=1000, input_size=224, dropout=0.8, mode='small', width_mult=1.0):
         super(MobileNetV3, self).__init__()
         input_channel = 16
         last_channel = 1280
@@ -136,8 +136,8 @@ class MobileNetV3(nn.Module):
                 [3, 184, 80,  False, 'HS', 1],
                 [3, 480, 112, True,  'HS', 1],
                 [3, 672, 112, True,  'HS', 1],
-                [5, 672, 112, True,  'HS', 1],  # c = 112, paper set it to 160 by error
                 [5, 672, 160, True,  'HS', 2],
+                [5, 960, 160, True,  'HS', 1],
                 [5, 960, 160, True,  'HS', 1],
             ]
         elif mode == 'small':
@@ -147,7 +147,7 @@ class MobileNetV3(nn.Module):
                 [3, 16,  16,  True,  'RE', 2],
                 [3, 72,  24,  False, 'RE', 2],
                 [3, 88,  24,  False, 'RE', 1],
-                [5, 96,  40,  True,  'HS', 2],  # stride = 2, paper set it to 1 by error
+                [5, 96,  40,  True,  'HS', 2],
                 [5, 240, 40,  True,  'HS', 1],
                 [5, 240, 40,  True,  'HS', 1],
                 [5, 120, 48,  True,  'HS', 1],
@@ -161,9 +161,9 @@ class MobileNetV3(nn.Module):
 
         # building first layer
         assert input_size % 32 == 0
-        # input_channel = make_divisible(input_channel * width_mult)  # first channel is always 16!
         self.last_channel = make_divisible(last_channel * width_mult) if width_mult > 1.0 else last_channel
         self.features = [conv_bn(3, input_channel, 2, nlin_layer=Hswish)]
+        self.classifier = []
 
         # building mobile blocks
         for k, exp, c, se, nl, s in mobile_setting:
@@ -177,29 +177,33 @@ class MobileNetV3(nn.Module):
             last_conv = make_divisible(960 * width_mult)
             self.features.append(conv_1x1_bn(input_channel, last_conv, nlin_layer=Hswish))
             self.features.append(nn.AdaptiveAvgPool2d(1))
-            self.features.append(Hswish(inplace=True))
             self.features.append(nn.Conv2d(last_conv, last_channel, 1, 1, 0))
             self.features.append(Hswish(inplace=True))
-            self.features.append(nn.Conv2d(last_channel, n_class, 1, 1, 0))
         elif mode == 'small':
             last_conv = make_divisible(576 * width_mult)
             self.features.append(conv_1x1_bn(input_channel, last_conv, nlin_layer=Hswish))
-            self.features.append(SEModule(last_conv))  # refer to paper Table2
+            # self.features.append(SEModule(last_conv))  # refer to paper Table2, but I think this is a mistake
             self.features.append(nn.AdaptiveAvgPool2d(1))
+            self.features.append(nn.Conv2d(last_conv, last_channel, 1, 1, 0))
             self.features.append(Hswish(inplace=True))
-            self.features.append(conv_1x1_bn(last_conv, last_channel, nlin_layer=Hswish))
-            self.features.append(conv_1x1_bn(last_channel, n_class, nlin_layer=Hswish))
         else:
             raise NotImplementedError
 
         # make it nn.Sequential
         self.features = nn.Sequential(*self.features)
 
+        # building classifier
+        self.classifier = nn.Sequential(
+            nn.Dropout(p=dropout),    # refer to paper section 6
+            nn.Linear(last_channel, n_class),
+        )
+
         self._initialize_weights()
 
     def forward(self, x):
         x = self.features(x)
         x = x.mean(3).mean(2)
+        x = self.classifier(x)
         return x
 
     def _initialize_weights(self):
@@ -221,17 +225,26 @@ class MobileNetV3(nn.Module):
 def mobilenetv3(pretrained=False, **kwargs):
     model = MobileNetV3(**kwargs)
     if pretrained:
-        raise NotImplementedError
+        state_dict = torch.load('mobilenetv3_small_67.4.pth.tar')
+        model.load_state_dict(state_dict, strict=True)
+        # raise NotImplementedError
     return model
 
 
 if __name__ == '__main__':
-    net = mobilenetv3(mode='small')
-    state_dict = torch.load('mobilenetv3_small_67.218.pth.tar')
-    net.load_state_dict(state_dict)
+    net = mobilenetv3()
     print('mobilenetv3:\n', net)
     print('Total params: %.2fM' % (sum(p.numel() for p in net.parameters())/1000000.0))
-    input_size=(16, 3, 224, 224)
+    input_size=(1, 3, 224, 224)
+    # pip install --upgrade git+https://github.com/Lyken17/pytorch-OpCounter.git
+    from thop import profile
+    flops, params = profile(net, input_size=input_size)
+    # print(flops)
+    # print(params)
+    print('Total params: %.2fM' % (params/1000000.0))
+    print('Total flops: %.2fM' % (flops/1000000.0))
     x = torch.randn(input_size)
     out = net(x)
+
+
 
