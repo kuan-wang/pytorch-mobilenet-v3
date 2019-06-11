@@ -9,7 +9,12 @@ Some details may be different from the original paper, welcome to discuss and he
 - **[NEW]** I remove the se before the global avg_pool (the paper may add it in error), and now the model size is close to paper.
 
 ## Training & Accuracy
-In progress ...
+### training setting:
+
+1. number of epochs: 150
+2. learning rate schedule: cosine learning rate, initial lr=0.05
+3. weight decay: 4e-5
+4. remove dropout
 
 ### MobileNetV3 large
 |              | Madds     | Parameters | Top1-acc  | Pretrained Model                                             |
