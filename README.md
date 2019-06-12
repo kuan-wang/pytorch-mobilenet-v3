@@ -15,6 +15,7 @@ Some details may be different from the original paper, welcome to discuss and he
 2. learning rate schedule: cosine learning rate, initial lr=0.05
 3. weight decay: 4e-5
 4. remove dropout
+5. batch size: 256
 
 ### MobileNetV3 large
 |              | Madds     | Parameters | Top1-acc  | Pretrained Model                                             |
