@@ -161,7 +161,7 @@ class MobileNetV3(nn.Module):
 
         # building first layer
         assert input_size % 32 == 0
-        self.last_channel = make_divisible(last_channel * width_mult) if width_mult > 1.0 else last_channel
+        last_channel = make_divisible(last_channel * width_mult) if width_mult > 1.0 else last_channel
         self.features = [conv_bn(3, input_channel, 2, nlin_layer=Hswish)]
         self.classifier = []
 
